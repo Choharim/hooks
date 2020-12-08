@@ -5,12 +5,10 @@ import React, { useEffect, useState } from 'react';
 const App = () => {
   const sayHello = () => { console.log("Hello")};
 
-  useEffect(() => {
-    sayHello();
-  });
-
   const [number, setNumber] = useState(0);
   const [anumber, setAnumber] = useState(0);
+
+  useEffect(sayHello,[number]); //mount되었을 때 sayHello실행, number이 update되었을 때 sayHello실행 ,만약 []이면 update되어도 sayHello실행 안됨  
 
   return (
     <div className="App">
