@@ -1,33 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const useClick = (onClick) => {
-  const element = useRef();
-
-  useEffect(() => {
-    if(element.current){
-      element.current.addEventListener("click",onClick);
-    }
-    return (() => {
-      if(element.current){
-      element.current.removeEventListener("click",onClick);
-      }
-    });//useEffect에서 function을 return하면 componentWiilUnMount일때 그 function 실행
-
-  },[]);
-
-  if(typeof onClick !== "function"){
+const useConfirm = (message = "",onConfirm,onCancle) => {
+  if(!onConfirm || typeof onConfirm !== "function"){
     return;
   }
 
-  return element;
+  if(!onCancle || typeof onCancle !== "function"){
+    return;
+  }
+
+  const confirmAction = () => {
+    if(window.confirm(message)){
+      onConfirm();
+    }else{
+      onCancle();
+    }
   };
 
+  return confirmAction;
+};
+
 const App = () => {
-  const sayHello = () => console.log("Hello");
-  const title = useClick(sayHello);
+  const deleteWorld = () => { console.log("delete the world");};
+  const abort = () => { console.log("Aborted");};
+  const confirmDelete = useConfirm("Are you sure",deleteWorld,abort);
+
   return (
     <div className="App">
-      <h1 ref={title}>Hi</h1>
+      <button onClick={confirmDelete}>Delete the world</button>
     </div>
   );
 };
