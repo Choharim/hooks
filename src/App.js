@@ -1,56 +1,34 @@
 import React, { useState } from 'react';
-import './App.css';
+
+const useInput = (initValue, validator) => {
+  const [value, setValue] = useState(initValue);
+
+  const onChange = (event) => {
+    const {
+      target:{value}
+      } = event;
+
+    let willUpdate = true;
+    if(typeof validator === "function"){
+      willUpdate = validator(value);
+    }
+
+    if(willUpdate){
+      setValue(value);
+    }
+  };
+  return { value, onChange };
+};
 
 const App = () => {
-  const [item, setItem] = useState(1);
-  const incrementItem = () => {
-    setItem(item + 1);
-  };
-  const decrementItem = () => {
-    setItem(item - 1);
-  };
+  const maxLength = (value) => !value.includes("@") ;
 
+  const name = useInput("Mr.",maxLength);
   return (
-    <div className="App">
-      <h1>{item}</h1>
-      <button onClick={incrementItem}>increment</button>
-      <button onClick={decrementItem}>decrement</button>
-    </div>
+    <input placeholder="name" {...name}></input>
   );
 };
 
-class AppUgly extends React.Component{
-  state = {
-    item:1
-  };
-
-  incrementItem = () => {
-    this.setState(pre => { 
-      return (
-        { item : pre.item + 1}
-      );
-    });
-  }
-  decrementItem = () => {
-    this.setState(pre => {
-      return (
-        { item : pre.item -1}
-      );
-    });
-  }
-
-  render(){
-    const { item } = this.state;
-    return (
-      <div className="AppUgly">
-        <h1>{item}</h1>
-        <button onClick={this.incrementItem}>increment2</button>
-        <button onClick={this.decrementItem}>decrement2</button>
-      </div>
-    );
-  }
-}
 
 
-
-export default AppUgly;
+export default App;
