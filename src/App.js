@@ -1,41 +1,33 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 
-const useFullscreen = (callback) => {
-  const element = useRef();
-  const runCallback = (isfull) => {
-    if(callback && typeof callback ==="function"){
-      callback(isfull);
-    }  
-  };
+const useNotification = (title,options) => {
+  if(!("Notificaion" in window)){
+    return;
+  }
 
-  const triggerFull = () => {
-    if(element.current){
-      element.current.requestFullscreen();
-      runCallback(true);
+  const fireNotif = () => {
+    if(Notification.permission !== "granted"){
+      Notification.requestPermission().then(permission => {
+        if(permission === "granted"){
+          new Notification(title,options);
+        } else {
+          return;
+        }
+      });
+    } else {
+      new Notification(title,options);
     }
   };
 
-  const exitFull = () => {
-    document.exitFullscreen();
-    runCallback(false);
-  };
-
-  return {element,triggerFull,exitFull};
+  return fireNotif;
 };
 
 const App = () => {
-  const onFullS = (isFull) => {
-    console.log(isFull ? "We are full" : "We are small");
-  };
-  const {element,triggerFull,exitFull} = useFullscreen(onFullS);
- 
+  const trigerNotif = useNotification("can i steal your kimchi?",{body: "I love kimchi"});
+  
   return (
     <div className="App" style={{height: "1000vh"}}>
-      <div ref={element} >
-        <img src="https://lh3.googleusercontent.com/proxy/9MdSBC11pW1bbngwIO7EcNsmE2bqzbQwAac0OWI42PNgy1IO0Q1cTkjyiHSYGFXu9L-v9xKTH-X9jJb92r2KNFyE6Ha1ZGf1H3ezLJVr3_-5Ekp-807DqlxUIt0nAKMcnq4bG5xdfiRYeNTPPuUoNi4JPeMJjWrA5B6s"></img>
-        <button onClick={exitFull}>exitscreen</button>
-      </div>
-      <button onClick={triggerFull}>fullscreen</button>
+     <button onClick={trigerNotif}>hello</button>
     </div>
   );
 };
