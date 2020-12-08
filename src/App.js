@@ -1,22 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const useFullscreen = () => {
+const useFullscreen = (callback) => {
   const element = useRef();
+  const runCallback = (isfull) => {
+    if(callback && typeof callback ==="function"){
+      callback(isfull);
+    }  
+  };
+
   const triggerFull = () => {
     if(element.current){
-      element.current.requestFullscreen();  
+      element.current.requestFullscreen();
+      runCallback(true);
     }
   };
 
   const exitFull = () => {
     document.exitFullscreen();
+    runCallback(false);
   };
 
   return {element,triggerFull,exitFull};
 };
 
 const App = () => {
-  const {element,triggerFull,exitFull} = useFullscreen();
+  const onFullS = (isFull) => {
+    console.log(isFull ? "We are full" : "We are small");
+  };
+  const {element,triggerFull,exitFull} = useFullscreen(onFullS);
  
   return (
     <div className="App" style={{height: "1000vh"}}>
