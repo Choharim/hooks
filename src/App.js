@@ -1,32 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 
-const useFadeIn = (duration = 1,delay = 0) => {
-  const element = useRef();
-  useEffect(() => {
-    if(element.current){
-      const {current} = element;
-      current.style.opacity = 1;
-      current.style.transition = `opacity ${duration}s ease-in-out ${delay}s`;
+const useNetwork = (onChange) => { 
+  const [status, setStatus] = useState(navigator.onLine);
+  const handleChange = () => {
+    if(typeof onChange === "function"){
+      onChange(navigator.onLine);
     }
+    setStatus(navigator.onLine);
 
+  };
+
+  useEffect(() => {
+    window.addEventListener("online",handleChange);
+    window.addEventListener("offline",handleChange);
+
+    return ( () => {  
+      window.removeEventListener("online",handleChange);
+      window.removeEventListener("offline",handleChange);
+    });
   },[]);
 
-  if(typeof duration !== "number" || typeof delay !== "number"){
-    return;
-  }
-
-  return {ref: element, style: {opacity:0}};
-};
+  return status;
+}; 
 
 const App = () => {
-  const fadeInH1 = useFadeIn(1,2);
-  const fadeInP = useFadeIn(5,5);
-
+  const handleNetworkChange = (online) => {
+    console.log(online ? "We just online" : "We are offline");
+  };
+  const onLine =  useNetwork(handleNetworkChange);
+ 
   return (
     <div className="App">
-      <h1 {...fadeInH1}>Hello</h1>
-      <p {...fadeInP}>lorem alalalallaaa</p>
+     <h1>{onLine ? "Online" : "Offline"}</h1>
     </div>
   );
 };
